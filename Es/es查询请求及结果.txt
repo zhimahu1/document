@@ -1,0 +1,70 @@
+2018-06-12 18:11:33,504 main  INFO [com.jd.es.example.Main:main] - 查询请求：
+{
+  "size" : 20,
+  "query" : {
+    "match_all" : { }
+  }
+}
+2018-06-12 18:11:33,553 main  INFO [com.jd.es.example.Main:main] - 查询结果：
+{
+  "took" : 1,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 4,
+    "successful" : 4,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : 8,
+    "max_score" : 1.0,
+    "hits" : [ {
+      "_index" : "air_flight_query_index",
+      "_type" : "air_flight_query_type",
+      "_id" : "6",
+      "_score" : 1.0,
+      "_source":{"depCity":"上海","arrCity":"北京","queryDate":"2018-06-21"}
+    }, {
+      "_index" : "air_flight_query_index",
+      "_type" : "air_flight_query_type",
+      "_id" : "3",
+      "_score" : 1.0,
+      "_source":{"depCity":"南京","arrCity":"北京","queryDate":"2018-06-22"}
+    }, {
+      "_index" : "air_flight_query_index",
+      "_type" : "air_flight_query_type",
+      "_id" : "7",
+      "_score" : 1.0,
+      "_source":{"depCity":"上海","arrCity":"北京","queryDate":"2018-06-23"}
+    }, {
+      "_index" : "air_flight_query_index",
+      "_type" : "air_flight_query_type",
+      "_id" : "8",
+      "_score" : 1.0,
+      "_source":{"depCity":"上海","arrCity":"北京","queryDate":"2018-06-22"}
+    }, {
+      "_index" : "air_flight_query_index",
+      "_type" : "air_flight_query_type",
+      "_id" : "1",
+      "_score" : 1.0,
+      "_source":{"depCity":"北京","arrCity":"上海","queryDate":"2018-06-22"}
+    }, {
+      "_index" : "air_flight_query_index",
+      "_type" : "air_flight_query_type",
+      "_id" : "2",
+      "_score" : 1.0,
+      "_source":{"depCity":"北京","arrCity":"三亚","queryDate":"2018-06-22"}
+    }, {
+      "_index" : "air_flight_query_index",
+      "_type" : "air_flight_query_type",
+      "_id" : "4",
+      "_score" : 1.0,
+      "_source":{"depCity":"西安","arrCity":"延安","queryDate":"2018-06-22"}
+    }, {
+      "_index" : "air_flight_query_index",
+      "_type" : "air_flight_query_type",
+      "_id" : "5",
+      "_score" : 1.0,
+      "_source":{"depCity":"海南","arrCity":"山东","queryDate":"2018-06-22"}
+    } ]
+  }
+}
