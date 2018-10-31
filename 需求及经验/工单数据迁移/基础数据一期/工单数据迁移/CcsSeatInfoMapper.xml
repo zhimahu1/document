@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.flight.manager.mapper.CcsSeatInfoMapper">
+    <resultMap id="BaseResultMap" type="com.flight.manager.model.CcsSeatInfo">
+        <!--
+          WARNING - @mbggenerated
+        -->
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="airways" property="airways" jdbcType="VARCHAR"/>
+        <result column="seat" property="seat" jdbcType="VARCHAR"/>
+        <result column="discount" property="discount" jdbcType="REAL"/>
+        <result column="seat_type" property="seatType" jdbcType="VARCHAR"/>
+        <result column="seat_level" property="seatLevel" jdbcType="VARCHAR"/>
+        <result column="state" property="state" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="operator" property="operator" jdbcType="VARCHAR"/>
+        <result column="opdate" property="opdate" jdbcType="TIMESTAMP"/>
+        <result column="is_special_seat" jdbcType="TINYINT" property="isSpecialSeat"/>
+        <result column="child_seat_no" property="childSeatNo" jdbcType="VARCHAR"/>
+        <result column="baby_seat_no" property="babySeatNo" jdbcType="VARCHAR"/>
+
+        <result column="soldier_police_seat_no" property="soldierPoliceSeatNo" jdbcType="VARCHAR"/>
+
+        <result column="letters" property="letters" jdbcType="VARCHAR"/>
+        <result column="is_speed_refund" jdbcType="TINYINT" property="isSpeedRefund"/>
+        <result column="is_need_child_airport_fuel" jdbcType="TINYINT" property="isNeedChildAirportFuel"/>
+        <result column="sale_effect_date_begin" jdbcType="DATE" property="saleEffectDateBegin"/>
+        <result column="sale_effect_date_end" jdbcType="DATE" property="saleEffectDateEnd"/>
+        <result column="effect_takeoff_date_begin" jdbcType="DATE" property="effectTakeoffDateBegin"/>
+        <result column="effect_takeoff_date_end" jdbcType="DATE" property="effectTakeoffDateEnd"/>
+
+        <result column="is_upgradeprice_morethan_changeprice" jdbcType="TINYINT" property="isUpgradeMorethanChange"/>
+        <result column="is_only_upgradeprice" jdbcType="TINYINT" property="isOnlyUpgradeprice"/>
+
+    </resultMap>
+    <select id="selectSingleRecord" parameterType="com.flight.manager.model.CcsCarrypriceA" resultMap="BaseResultMap">
+  		SELECT seat_type,seat_level,discount from ccs_seat_info
+  		where airways =#{aircomp2c} and seat =#{flightclass} and state =1 limit 1
+    </select>
+
+    <select id="selectNfdRecord" parameterType="com.flight.manager.model.CcsNfdCarrypriceA" resultMap="BaseResultMap">
+  		SELECT seat_type,seat_level,discount from ccs_seat_info
+  		where airways =#{airWays} and seat =#{classNo} and is_special_seat=1 and state =1
+  		limit 1
+    </select>
+
+    <select id="selectOrderByDiscount" parameterType="com.flight.manager.model.CcsSeatInfo" resultMap="BaseResultMap">
+        SELECT * FROM ccs_seat_info
+        <where>
+            <if test="airways !=null">
+                and airways=#{airways}
+            </if>
+            <if test="state !=null">
+                and state=#{state}
+            </if>
+            <if test="seat !=null and seat != ''">
+                and seat=#{seat}
+            </if>
+            <if test="effectTakeoffDateBegin != null">
+                and DATE_FORMAT(#{effectTakeoffDateBegin}, '%Y-%m-%d') between effect_takeoff_date_begin and effect_takeoff_date_end
+            </if>
+            <if test="saleEffectDateBegin != null">
+                and DATE_FORMAT(#{saleEffectDateBegin}, '%Y-%m-%d') between sale_effect_date_begin and sale_effect_date_end
+            </if>
+        </where>
+        ORDER BY airways,discount DESC ,id
+    </select>
+
+    <select id="selectChildSeat" parameterType="java.lang.String" resultMap="BaseResultMap">
+  		SELECT distinct(seat) FROM ccs_seat_info 
+  		WHERE airways=#{airways}  AND state=1
+  		ORDER BY discount DESC ,id
+  </select>
+    <!--查询婴儿舱位大于等于100-->
+    <select id="selectBabySeat" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT distinct(seat) FROM ccs_seat_info
+        WHERE airways=#{airways}  AND state=1 AND discount &gt;=1
+        ORDER BY discount DESC ,id
+    </select>
+
+    <!--查询军警残-->
+    <select id="selectSoldierPoliceSeat" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT distinct(seat) FROM ccs_seat_info
+        WHERE airways=#{airways}  AND state=1
+        ORDER BY discount DESC ,id
+    </select>
+
+    <update id="update" parameterType="com.flight.manager.model.CcsSeatInfo">update ccs_seat_info
+        <set>
+            <if test="airways!=null">
+                airways=#{airways},
+            </if>
+            <if test="seat!=null">
+                seat=#{seat},
+            </if>
+            <if test="discount!=null">
+                discount=#{discount},
+            </if>
+            <if test="isSpecialSeat!=null">
+                is_special_seat=#{isSpecialSeat},
+            </if>
+            <if test="seatType !=null">
+                seat_type=#{seatType},
+            </if>
+            <if test="seatLevel !=null">
+                seat_level=#{seatLevel},
+            </if>
+            <if test="state !=null">
+                state=#{state},
+            </if>
+            <if test="operator !=null">
+                operator=#{operator},
+            </if>
+            <if test="opdate !=null">
+                opdate=#{opdate},
+            </if>
+            <if test="childSeatNo !=null">
+                child_seat_no=#{childSeatNo},
+            </if>
+            <if test="babySeatNo !=null">
+                baby_seat_no=#{babySeatNo},
+            </if>
+
+            <if test="soldierPoliceSeatNo !=null">
+                soldier_police_seat_no=#{soldierPoliceSeatNo},
+            </if>
+
+            <if test="letters !=null">
+                letters=#{letters},
+            </if>
+            <if test="isSpeedRefund !=null">
+                is_speed_refund=#{isSpeedRefund},
+            </if>
+            <if test="isNeedChildAirportFuel !=null">
+                is_need_child_airport_fuel=#{isNeedChildAirportFuel}
+            </if>
+            <if test="effectTakeoffDateBegin !=null">
+                ,effect_takeoff_date_begin=#{effectTakeoffDateBegin}
+            </if>
+            <if test="effectTakeoffDateEnd !=null">
+                ,effect_takeoff_date_end=#{effectTakeoffDateEnd}
+            </if>
+            <if test="saleEffectDateBegin !=null">
+                ,sale_effect_date_begin=#{saleEffectDateBegin}
+            </if>
+            <if test="saleEffectDateEnd !=null">
+                ,sale_effect_date_end=#{saleEffectDateEnd}
+            </if>
+            <if test="isUpgradeMorethanChange !=null">
+                ,is_upgradeprice_morethan_changeprice=#{isUpgradeMorethanChange}
+            </if>
+            <if test="isOnlyUpgradeprice !=null">
+                ,is_only_upgradeprice=#{isOnlyUpgradeprice}
+            </if>
+        </set>
+        <where>
+            id=#{id}
+        </where>
+    </update>
+    <select id="selectByAirways" resultMap="BaseResultMap" parameterType="java.lang.String">
+	 select seat,discount,airways from ccs_seat_info where airways=#{airways} AND state=1 order by discount desc;
+	</select>
+
+    <select id="selectByAirwaysAndSeat" parameterType="com.flight.manager.model.CcsSeatInfo" resultMap="BaseResultMap">
+  		SELECT seat_type,seat_level,discount,is_special_seat,child_seat_no from ccs_seat_info
+  		where airways =#{airways} and seat =#{seat}  and state =#{state}
+  		limit 1
+  	</select>
+
+    <select id="selectBySeatNos" parameterType="map" resultType="map">
+        SELECT
+        seat,
+        seat_type,
+        seat_level
+        FROM ccs_seat_info
+        WHERE airways = #{airways}
+        AND state = 1
+        AND seat in
+        <foreach collection="seats" item="seat" open="(" close=")" separator=",">
+            #{seat}
+        </foreach>
+    </select>
+
+    <!--根据航司和销售时间，出发时间查询-->
+    <select id="selectByAirwaysAndTime" parameterType="Map" resultMap="BaseResultMap">
+  	SELECT airways,seat,is_special_seat,seat_level,child_seat_no,is_need_child_airport_fuel,is_upgradeprice_morethan_changeprice,is_only_upgradeprice,seat_type
+ 	FROM ccs_seat_info WHERE airways=#{airways} AND state = '1' AND 
+ 	sale_effect_date_begin<![CDATA[<=]]>#{saleDate}<![CDATA[<=]]>sale_effect_date_end
+	AND  effect_takeoff_date_begin <![CDATA[<=]]>#{takeoffDate}<![CDATA[<=]]>effect_takeoff_date_end 
+  	</select>
+</mapper>

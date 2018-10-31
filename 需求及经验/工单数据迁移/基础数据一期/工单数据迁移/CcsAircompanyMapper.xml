@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flight.manager.mapper.CcsAircompanyMapper">
+  <resultMap id="BaseResultMap" type="com.flight.manager.model.CcsAircompany">
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="aircomp2c" jdbcType="VARCHAR" property="aircomp2c" />
+    <result column="company_name" jdbcType="VARCHAR" property="companyName" />
+    <result column="company_type" jdbcType="INTEGER" property="companyType" />
+    <result column="company_fullname" jdbcType="VARCHAR" property="companyFullname" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="invalidfee" jdbcType="DECIMAL" property="invalidfee" />
+    <result column="operator_fee" jdbcType="VARCHAR" property="operatorFee" />
+    <result column="operation_time_fee" jdbcType="TIMESTAMP" property="operationTimeFee" />
+    <result column="invalidlimit" jdbcType="INTEGER" property="invalidlimit" />
+    <result column="invalidlimit_startdate" jdbcType="DATE" property="invalidlimitStartdate" />
+    <result column="invalidlimit_enddate" jdbcType="DATE" property="invalidlimitEnddate" />
+    <result column="operator_limit" jdbcType="VARCHAR" property="operatorLimit" />
+    <result column="operation_time_limit" jdbcType="TIMESTAMP" property="operationTimeLimit" />
+    <result column="limit_type" jdbcType="INTEGER" property="limitType" />
+    <result column="invalidlimit_conditions" jdbcType="INTEGER" property="invalidlimitConditions" />
+    <result column="limit_dayortime" jdbcType="VARCHAR" property="limitDayortime" />
+    <result column="is_validtate" jdbcType="INTEGER" property="isValidtate" />
+    <result column="pinyin" jdbcType="VARCHAR" property="pinyin" />
+    <result column="channel_switch" jdbcType="INTEGER" property="channelSwitch" />
+  </resultMap>
+  
+  <select id="orderByAir2c" resultMap="BaseResultMap">
+  		SELECT * FROM ccs_aircompany ORDER BY  aircomp2c 
+  </select>
+  
+  <select id="queryList" parameterType="com.flight.manager.model.CcsAircompany" resultMap="BaseResultMap">
+  		select * from ccs_aircompany 
+  		<where>
+  			<if test="companyName != null and companyName != ''">
+  				company_name like CONCAT('%',#{companyName},'%')
+  			</if>
+  		</where> 
+  </select>
+</mapper>

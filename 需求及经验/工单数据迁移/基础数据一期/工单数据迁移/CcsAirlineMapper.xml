@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.flight.manager.mapper.CcsAirlineMapper" >
+	<resultMap id="BaseResultMap" type="com.flight.manager.model.CcsAirline" >
+		<!--
+          WARNING - @mbggenerated
+        -->
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="air_ways" property="airWays" jdbcType="VARCHAR" />
+		<result column="fd_airline_type" property="fdAirlineType" jdbcType="TINYINT" />
+		<result column="nfd_airline_type" property="nfdAirlineType" jdbcType="TINYINT" />
+		<result column="dep_code" property="depCode" jdbcType="VARCHAR" />
+		<result column="arr_code" property="arrCode" jdbcType="VARCHAR" />
+		<result column="full_price" property="fullPrice" jdbcType="INTEGER" />
+		<result column="distance" property="distance" jdbcType="INTEGER" />
+		<result column="airline_status" property="airlineStatus" jdbcType="TINYINT" />
+		<result column="effect_date_begin" property="effectDateBegin" jdbcType="DATE" />
+		<result column="effect_date_end" property="effectDateEnd" jdbcType="DATE" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="operator" property="operator" jdbcType="VARCHAR" />
+		<result column="is_sell_baby_ticket" jdbcType="TINYINT" property="isSellBabyTicket"/>
+		<result column="cache_validate_time" jdbcType="INTEGER" property="cacheValidateTime"/>
+		<!-- 扩展属性 -->
+		<association property="fromport" javaType="com.flight.manager.model.CcsAirport">
+			<id property="id" column="bid"/>
+			<result property="airportName" column="bairport_name"/>
+		</association>
+		<association property="toport" javaType="com.flight.manager.model.CcsAirport">
+			<id property="id" column="cid"/>
+			<result property="airportName" column="cairport_name"/>
+		</association>
+		<association property="aircompany" javaType="com.flight.manager.model.CcsAircompany">
+			<id property="id" column="did"/>
+			<result property="companyName" column="dcompany_name"/>
+		</association>
+	</resultMap>
+	<select id="orderByStatue" parameterType="com.flight.manager.model.CcsFdUpdatePolicy" resultMap="BaseResultMap">
+		SELECT a.*,b.id bid,b.airport_name bairport_name,c.id cid,c.airport_name cairport_name,d.id did,d.company_name dcompany_name
+		FROM ccs_airline a
+		LEFT JOIN ccs_airport b ON a.dep_code = b.airport3code
+		LEFT JOIN ccs_airport c ON a.arr_code = c.airport3code
+		LEFT JOIN ccs_aircompany d ON a.air_ways = d.aircomp2c
+		<where>
+			<if test="fdAirlineType !=null and fdAirlineType!=''">
+				and fd_airline_type = #{fdAirlineType}
+			</if>
+			<if test="nfdAirlineType !=null">
+				and nfd_airline_type = #{nfdAirlineType}
+			</if>
+			<if test="airWays !=null and airWays!=''">
+				and air_ways = #{airWays}
+			</if>
+			<if test="depCode != null and depCode!=''">
+				and dep_code like "%"#{depCode}"%"<!-- 防止sql注入 -->
+			</if>
+			<if test="arrCode != null and arrCode!=''">
+				and arr_code like "%"#{arrCode}"%"<!-- 防止sql注入 -->
+			</if>
+			<if test="airlineStatus !=null ">
+				and airline_status = #{airlineStatus}
+			</if>
+		</where>
+		ORDER BY a.air_ways,a.dep_code,a.arr_code,a.airline_status DESC,a.id
+	</select>
+
+
+	<!--查询航线表，where条件为状态以启用并且fd类型为普通的  lhj-->
+	<select id="selectListByfdType" parameterType="com.flight.manager.model.CcsFdUpdatePolicy" resultMap="BaseResultMap">
+		SELECT a.id,a.air_ways,a.fd_airline_type,a.nfd_airline_type,
+		a.dep_code,a.arr_code,a.full_price,a.distance,a.airline_status,
+		a.effect_date_begin,a.effect_date_end,a.create_time,a.update_time,a.operator
+		from ccs_airline a,ccs_airways_ticket_type b
+		<where>
+			b.airways=a.air_ways   and a.airline_status = 1
+			and a.fd_airline_type =0
+			<if test="airWays != '***'">
+				and a.air_ways = #{airWays}
+			</if>
+			<if test="depCode != '***'">
+				and a.dep_code = #{depCode}
+			</if>
+			<if test="arrCode != '***'">
+				and a.arr_code = #{arrCode}
+			</if>
+		</where>
+		GROUP BY a.air_ways,a.dep_code,a.arr_code
+	</select>
+
+	<!--查询航线表，where条件为状态以启用并且fd类型为热门的  lhj-->
+	<select id="selectHotAirLineList" resultMap="BaseResultMap">
+  		SELECT a.id,a.air_ways,a.fd_airline_type,a.nfd_airline_type,
+  		a.dep_code,a.arr_code,a.full_price,a.distance,a.airline_status,
+        a.effect_date_begin,a.effect_date_end,a.create_time,a.update_time,a.operator
+        from ccs_airline a,ccs_airways_ticket_type b
+		where
+			b.airways=a.air_ways and b.swith in (1,2)  and a.airline_status = 1 
+			and a.fd_airline_type =1
+		GROUP BY a.air_ways,a.dep_code,a.arr_code
+  </select>
+
+	<select id="selectSingle" parameterType="com.flight.manager.model.CcsFdUpdatePolicy" resultMap="BaseResultMap">
+		SELECT id,air_ways,fd_airline_type,nfd_airline_type,dep_code,arr_code,full_price,distance,airline_status,
+		effect_date_begin,effect_date_end,create_time,update_time,operator
+		from ccs_airline
+		<where>
+			airline_status = 1 and fd_airline_type =#{airlineType}
+			<if test=" airWays !=null and airWays != ''">
+				and air_ways = #{airWays}
+			</if>
+			<if test=" depCode !=null and depCode != ''">
+				and dep_code = #{depCode}
+			</if>
+			<if test="arrCode !=null and arrCode != ''">
+				and arr_code = #{arrCode}
+			</if>
+		</where>
+	</select>
+
+	<!--查询航线表，where条件为状态以启用并且nfd类型为普通的  lhj-->
+	<select id="selectListBynfdType" parameterType="com.flight.manager.model.CcsNfdUpdatePolicy" resultMap="BaseResultMap">
+		SELECT a.id,a.air_ways,a.fd_airline_type,a.nfd_airline_type,a.dep_code,a.arr_code,
+		a.full_price,a.distance,a.airline_status,a.effect_date_begin,
+		a.effect_date_end,a.create_time,a.update_time,a.operator
+		from ccs_airline a, ccs_airways_ticket_type b
+		<where>
+			b.airways=a.air_ways and b.swith in (1,2)
+			And a.airline_status = 1
+			and a.nfd_airline_type =0
+			<if test="airWays != '***'">
+				and a.air_ways = #{airWays}
+			</if>
+			<if test="depCode != '***'">
+				and a.dep_code = #{depCode}
+			</if>
+			<if test="arrCode != '***'">
+				and a.arr_code = #{arrCode}
+			</if>
+		</where>
+		GROUP BY a.air_ways,a.dep_code,a.arr_code
+	</select>
+
+	<select id="selectnfdSingle" parameterType="com.flight.manager.model.CcsNfdUpdatePolicy" resultMap="BaseResultMap">
+		SELECT id,air_ways,fd_airline_type,nfd_airline_type,dep_code,arr_code,full_price,distance,airline_status,
+		effect_date_begin,effect_date_end,create_time,update_time,operator
+		from ccs_airline
+		<where>
+			airline_status = 1 and nfd_airline_type =#{airlineType}
+			<if test=" airWays !=null and airWays != ''">
+				and air_ways = #{airWays}
+			</if>
+			<if test=" depCode !=null and depCode != ''">
+				and dep_code = #{depCode}
+			</if>
+			<if test="arrCode !=null and arrCode != ''">
+				and arr_code = #{arrCode}
+			</if>
+			<!-- <if test="depDate !=null">
+				and #{depDate} BETWEEN effect_date_begin and effect_date_end
+			</if> -->
+		</where>
+	</select>
+
+	<select id="queryDistanceForNfd" parameterType="com.flight.manager.model.CcsNfdCarrypriceA" resultType="java.lang.Integer">
+		SELECT distance
+		from ccs_airline
+		<where>
+			airline_status = 1
+			<if test=" airWays !=null and airWays != ''">
+				and air_ways = #{airWays}
+			</if>
+			<if test=" depCode !=null and depCode != ''">
+				and dep_code = #{depCode}
+			</if>
+			<if test="arrCode !=null and arrCode != ''">
+				and arr_code = #{arrCode}
+			</if>
+		</where>
+		limit 1
+	</select>
+
+	<!--查询航线表结束，where条件为状态以启用并且nfd类型为普通的  lhj-->
+
+	<update id="update" parameterType="com.flight.manager.model.CcsAirline">
+		update ccs_airline
+		<set>
+			<if test="airWays !=null">
+				air_ways=#{airWays},
+			</if>
+			<if test="fdAirlineType !=null">
+				fd_airline_type=#{fdAirlineType},
+			</if>
+			<if test="nfdAirlineType !=null">
+				nfd_airline_type=#{nfdAirlineType},
+			</if>
+			<if test="depCode !=null">
+				dep_code=#{depCode},
+			</if>
+			<if test="arrCode !=null">
+				arr_code=#{arrCode},
+			</if>
+			<if test="fullPrice !=null">
+				full_price=#{fullPrice},
+			</if>
+			<if test="distance !=null">
+				distance=#{distance},
+			</if>
+			<if test="airlineStatus !=null">
+				airline_status=#{airlineStatus},
+			</if>
+			<if test="effectDateBegin !=null">
+				effect_date_begin=#{effectDateBegin},
+			</if>
+			<if test="effectDateEnd !=null">
+				effect_date_end=#{effectDateEnd},
+			</if>
+			<if test="createTime !=null">
+				create_time=#{createTime},
+			</if>
+
+			<if test="updateTime !=null">
+				update_time=#{updateTime},
+			</if>
+			<if test="operator !=null">
+				operator=#{operator},
+			</if>
+		</set>
+		<where>
+			id=#{id}
+		</where>
+	</update>
+
+	<select id="queryAirLineList" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		SELECT a.* from ccs_airline a, ccs_airways_ticket_type b
+		<where>
+			b.airways=a.air_ways and b.swith in (1,2)
+			And a.airline_status =1 and a.nfd_airline_type=#{nfdAirlineType}
+		</where>
+		GROUP BY a.air_ways,a.dep_code,a.arr_code
+	</select>
+
+	<select id="selectFdAirLine" parameterType="com.flight.manager.model.CcsAirline" resultMap="BaseResultMap">
+		SELECT a.* from ccs_airline a, ccs_airways_ticket_type b
+		<where>
+			b.airways=a.air_ways
+			and b.swith in (1,2)
+			and a.airline_status =1
+			<if test="fdAirlineType !=null">
+				and a.fd_airline_type=#{fdAirlineType}
+			</if>
+			<if test="airWays !=null">
+				and a.air_ways = #{airWays}
+			</if>
+			<if test="depCode !=null">
+				and a.dep_code=#{depCode}
+			</if>
+			<if test="arrCode !=null">
+				and a.arr_code = #{arrCode}
+			</if>
+
+		</where>
+		GROUP BY a.air_ways,a.dep_code,a.arr_code
+	</select>
+
+	<select id="selectNfdAirLine" parameterType="com.flight.manager.model.CcsAirline" resultMap="BaseResultMap">
+		SELECT a.* from ccs_airline a, ccs_airways_ticket_type b
+		<where>
+			b.airways=a.air_ways
+			and b.swith in (1,2)
+			and a.airline_status =1
+			<if test="nfdAirlineType !=null">
+				and a.nfd_airline_type=#{nfdAirlineType}
+			</if>
+			<if test="airWays !=null">
+				and a.air_ways = #{airWays}
+			</if>
+			<if test="depCode !=null">
+				and a.dep_code=#{depCode}
+			</if>
+			<if test="arrCode !=null">
+				and a.arr_code = #{arrCode}
+			</if>
+		</where>
+		GROUP BY a.air_ways,a.dep_code,a.arr_code
+	</select>
+	<select id="paginationAirLine" parameterType="com.flight.manager.model.CcsAirline" resultMap="BaseResultMap">
+		SELECT a.*,b.id bid,b.airport_name bairport_name,c.id cid,c.airport_name cairport_name,d.id did,d.company_name dcompany_name
+		FROM ccs_airline a
+		LEFT JOIN ccs_airport b ON a.dep_code = b.airport3code
+		LEFT JOIN ccs_airport c ON a.arr_code = c.airport3code
+		LEFT JOIN ccs_aircompany d ON a.air_ways = d.aircomp2c
+		<where>
+			<if test="fdAirlineType !=null and fdAirlineType!=''">
+				and fd_airline_type = #{fdAirlineType}
+			</if>
+			<if test="nfdAirlineType !=null and nfdAirlineType !=''">
+				and nfd_airline_type != #{nfdAirlineType}
+			</if>
+			<if test="airWays !=null and airWays!=''">
+				and air_ways = #{airWays}
+			</if>
+			<if test="depCode != null and depCode!=''">
+				and dep_code like "%"#{depCode}"%"<!-- 防止sql注入 -->
+			</if>
+			<if test="arrCode != null and arrCode!=''">
+				and arr_code like "%"#{arrCode}"%"<!-- 防止sql注入 -->
+			</if>
+			<if test="airlineStatus !=null ">
+				and airline_status = #{airlineStatus}
+			</if>
+		</where>
+		ORDER BY a.id
+	</select>
+</mapper>

@@ -1,0 +1,10 @@
+1.产品建立pmp
+2.接口约定可以先给初版,外包给了“京东自营机票接入接口规范TTS直连V1.10”文档,将文档上传到air.document
+3.找外包要包机切位tts客户端jar包,jsf的jar包升级为1.0.6,将jar包放在D:\repository\com\jd\air\self\api\jd-air-flight-tts-api\1.0.6-SNAPSHOT中。
+4.airplane-model中重新import-install。
+5.airplane-consumer中重新import-install。
+6.airplane-gw、airplane-jipiao中重新import-install
+7.排期
+8.UC设计，完了评审(考虑来源，过滤,  还没有评审)
+9.产品经理杨彬彬给交互稿，安排前端资源。与杜守珺协商打标及浮层字段（考虑以后移动端接入）
+10.与工单约定，tts.jsf.alias和tts.handler.jsf.alias，开发完打包后jdos中部署，完了告知工单相关人员
