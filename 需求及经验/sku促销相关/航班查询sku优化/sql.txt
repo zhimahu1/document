@@ -1,2 +1,0 @@
-查询有效活动：
-SELECT * from air_prom_bdata_activity where begin_time>=1522315551000 and end_time<=1522315551000
